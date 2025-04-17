@@ -1,0 +1,84 @@
+serviceName: bank_account_service
+grpc:
+  port: :5001
+  development: true
+http:
+  port: :5007
+  development: true
+  basePath: /api/v1
+  bankAccountsPath: /api/v1/accounts
+  debugErrorsResponse: true
+  ignoreLogUrls: [ "metrics", "swagger" ]
+probes:
+  readinessPath: /ready
+  livenessPath: /live
+  port: :3001
+  pprof: :6001
+  prometheusPath: /metrics
+  prometheusPort: :8001
+  checkIntervalSeconds: 10
+logger:
+  level: info
+  devMode: false
+  encoder: console
+postgres:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  dbName: bank_accounts
+  sslMode: false
+kafka:
+  brokers: [ "localhost:9093" ]
+  groupID: bank_account_microservice_consumer
+  initTopics: true
+kafkaTopics:
+  eventCreated:
+    topicName: event_created
+    partitions: 10
+    replicationFactor: 1
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  poolSize: 300
+jaeger:
+  enable: true
+  serviceName: bank_account_service
+  hostPort: "localhost:6831"
+  logSpans: false
+timeouts:
+  postgresInitMilliseconds: 1500
+  postgresInitRetryCount: 3
+eventSourcingConfig:
+  SnapshotFrequency: 5
+mongo:
+  uri: "mongodb://localhost:27017"
+  user: admin
+  password: admin
+  db: bankAccounts
+mongoCollections:
+  bankAccounts: bankAccounts
+kafkaPublisherConfig:
+  topic: event_created
+  topicPrefix: eventstore
+  partitions: 10
+  replicationFactor: 1
+projections:
+  mongoGroup: 'mongoGroup'
+  elasticGroup: 'elasticGroup'
+  mongoSubscriptionPoolSize: 10
+  elasticSubscriptionPoolSize: 10
+elasticSearch:
+  addresses: ["http://localhost:9200"]
+  username: ""
+  password: ""
+  apiKey: ""
+  enableLogging: false
+elasticIndexes:
+  bankAccounts: accounts
+migrations:
+  enable: true
+  recreate: false
+  sourceURL: "file://migrations"
+  dbURL: "postgres://postgres:postgres@localhost:5432/bank_accounts?sslmode=disable"
